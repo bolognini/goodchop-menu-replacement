@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/renderer",
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": false
+  },
+  "include": [
+    "./**/*"
+  ]
+}

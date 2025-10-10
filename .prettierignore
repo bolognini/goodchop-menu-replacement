@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+release
+
+# Config files
+package.json
+yarn.lock
+tsconfig.json
+.vscode
+
+# Other
+*.log
+.DS_Store
+

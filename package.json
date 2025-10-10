@@ -1,0 +1,78 @@
+{
+  "name": "goodchop-menu-replacement",
+  "version": "1.0.0",
+  "description": "GoodChop Menu Replacement - Simplified Recipe Management Tool",
+  "main": "dist/main/main.js",
+  "author": "GoodChop Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/goodchop-menu-replacement.git"
+  },
+  "keywords": [
+    "electron",
+    "kubernetes",
+    "recipe-management",
+    "goodchop",
+    "kubectl",
+    "menu-replacement",
+    "desktop-app"
+  ],
+  "homepage": "./",
+  "scripts": {
+    "dev": "concurrently \"yarn build:watch\" \"yarn electron:dev\"",
+    "build": "yarn build:main && yarn build:renderer",
+    "build:main": "tsc -p src/main/tsconfig.json",
+    "build:renderer": "webpack --config webpack.config.js",
+    "build:watch": "concurrently \"yarn build:main --watch\" \"yarn build:renderer --watch\"",
+    "electron:dev": "wait-on dist/main/main.js && electron .",
+    "electron:pack": "electron-builder",
+    "prepack": "yarn build",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/styled-components": "^5.1.26",
+    "concurrently": "^8.2.0",
+    "css-loader": "^6.8.1",
+    "electron": "^25.0.0",
+    "electron-builder": "^24.0.0",
+    "html-webpack-plugin": "^5.5.3",
+    "prettier": "^3.6.2",
+    "style-loader": "^3.3.3",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.0.0",
+    "wait-on": "^7.0.1",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "styled-components": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.goodchop.menu-replacement",
+    "productName": "GoodChop Menu Replacement",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
