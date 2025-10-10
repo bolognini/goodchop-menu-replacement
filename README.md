@@ -1,7 +1,7 @@
 # GoodChop Menu Replacement 🍖
 
 <p align="center"><img src="src/renderer/assets/goodchop-logo.png" alt="Good Chop Logo" width="60"></p>
-<p align="center">&laquo;<b>A simplified desktop application for managing recipe replacements in Kubernetes - built for non-technical users.</b>&raquo;</p>
+<p align="center">&laquo;<b>A simplified desktop application for recipe replacements - built for non-technical users</b>&raquo;</p>
 <p align="center">This project runs scripts from another service owned by HelloFresh.</p>
 <br />
 <br />
