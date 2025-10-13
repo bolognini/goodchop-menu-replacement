@@ -6,28 +6,55 @@
 <br />
 <br />
 
-## 📋 Overview
+## Overview
 
 GoodChop Menu Replacement is an Electron-based desktop application that streamlines the process of swapping recipe indexes in Kubernetes pods. It provides a user-friendly GUI for operations that typically require technical knowledge to run terminal commands, making it accessible to non-technical team members.
 
 The objective is empowering non-tech teammates on the operational team to make meal replacements themselves, avoiding the bottleneck and Engineering dependency.
 
-## ✨ Features
+## How It Works
 
-- **Guided Workflow**: Step-by-step authentication and pod connection process
-- **Multi-Week Support**: Process multiple weeks of recipe swaps in a single operation
-- **Automatic CSV Detection**: Automatically captures generated CSV filenames from command output
-- **Batch CSV Export**: Copy all generated CSVs to your desktop with one click
-- **Real-time Status Updates**: Visual feedback for all operations with retry mechanisms
-- **Safe Execution**: Built-in validation ensures commands run in the correct environment
+The app walks you through connecting to the right Kubernetes pod, then lets you specify which recipes to swap and for which weeks. It runs the necessary commands in the background, waits for the CSVs to be generated, and gives you a button to copy them all to your desktop when they're ready.
 
-## 🔧 Prerequisites
+## Prerequisites
 
-Before using this application, you need to complete a **one-time setup** of AWS and Kubectl. Follow the instructions here:
+Before using this application, you need to complete a **one-time setup** of AWS and Kubectl.
 
-👉 [Setup Guide](https://github.com/hellofresh/hf-kubernetes/tree/master/eks#setup)
+You'll need the following tools to authenticate and work with EKS:
 
-### System Requirements
+- [kubelogin](https://azure.github.io/kubelogin/index.html)
+
+  ```
+  brew install Azure/kubelogin/kubelogin
+  ```
+
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+### Setup
+
+1. Download [eksconfig.sh](https://github.com/hellofresh/hf-kubernetes/raw/master/eks/eksconfig.sh) and [eksconfig.yml](https://github.com/hellofresh/hf-kubernetes/raw/master/eks/eksconfig.yml) by clicking File > Save Page As > `eksconfig.sh|eksconfig.yml`
+
+2. Make the script executable
+
+```
+chmod +x eksconfig.sh
+```
+
+3. Run `eksconfig.sh` to setup your EKS Kube config by executing the following commands:
+
+```
+./eksconfig.sh
+```
+
+4. Set KUBECONFIG environment variable
+
+```
+export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/eksconfig
+```
+
+This sets your Kube config to use `config` and the newly generated `eksconfig`. Also, be sure to set this in your `.bashrc` or `.zshrc`.
+
+## System Requirements
 
 - macOS (primary support)
 - Node.js 16+ and Yarn
@@ -35,31 +62,23 @@ Before using this application, you need to complete a **one-time setup** of AWS 
 - Kubectl installed and configured
 - Access to HelloFresh Kubernetes clusters
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Installation for End Users
 
 If you received a `.dmg` file and encounter a "damaged app" warning, **see the [Installation Guide](INSTALL.md)** for instructions on how to safely install the app.
 
+Remember that you still need to do the **one-time setup** [mentioned above](#prerequisites). This requires running simple commands in the terminal. If you're not used to it, please reach out to an Engineer to help you out setting this up.
+
 ### Installation for Development
 
-1. **Clone the repository**
+**Clone the repository, install dependencies and run in development mode**
 
-   ```bash
-   git clone <repository-url>
-   cd menu-replacement
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   yarn install
-   ```
-
-3. **Run in development mode**
-   ```bash
-   yarn dev
-   ```
+```bash
+git clone <repository-url>
+cd menu-replacement
+yarn install && yarn dev
+```
 
 ### Building the Application
 
@@ -75,7 +94,7 @@ yarn electron:pack
 
 The built application will be available in the `release/` directory.
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Step 1: Authentication & Setup
 
@@ -97,91 +116,7 @@ The built application will be available in the `release/` directory.
 2. Wait for CSV generation (the app will retry automatically)
 3. Once all CSVs are ready, click **"Copy CSV to Desktop"**
 
-## 🏗️ Project Structure
-
-```
-menu-replacement/
-├── src/
-│   ├── main/              # Electron main process
-│   │   ├── main.ts        # Main process logic
-│   │   └── preload.ts     # Preload script (IPC bridge)
-│   └── renderer/          # React UI
-│       ├── App.tsx        # Main application component
-│       ├── styles.ts      # Styled components
-│       ├── index.tsx      # React entry point
-│       └── assets/        # Images and static files
-├── dist/                  # Build output (gitignored)
-├── package.json           # Dependencies and scripts
-└── webpack.config.js      # Webpack configuration
-```
-
-## 📦 Distribution
-
-### Creating Release Builds
-
-1. **macOS DMG**
-
-   ```bash
-   yarn build
-   yarn electron:pack
-   ```
-
-   The `.dmg` file will be in `release/`
-
-2. **Add Application Icon** (Optional)
-   - Create an icon file (`.icns` for macOS)
-   - Update `package.json` build configuration:
-     ```json
-     "build": {
-       "mac": {
-         "icon": "path/to/icon.icns"
-       }
-     }
-     ```
-
-### Sharing with Team
-
-Options for distributing to non-technical users:
-
-1. **GitHub Releases**: Upload the built `.dmg` file to GitHub releases
-2. **Internal Server**: Host the `.dmg` on a company server
-3. **Direct Share**: Share the `.dmg` via email or Slack
-
-**Important**: Users will need to follow the [Installation Guide](INSTALL.md) to bypass macOS Gatekeeper warnings since the app is not code-signed.
-
-### Code Signing (Optional)
-
-For production distribution without warnings, you'll need an Apple Developer account ($99/year):
-
-1. Update `package.json` mac configuration:
-
-   ```json
-   "mac": {
-     "target": "dmg",
-     "category": "public.app-category.developer-tools",
-     "hardenedRuntime": true,
-     "gatekeeperAssess": false,
-     "entitlements": "build/entitlements.mac.plist",
-     "entitlementsInherit": "build/entitlements.mac.plist",
-     "notarize": {
-       "teamId": "${APPLE_TEAM_ID}"
-     }
-   }
-   ```
-
-2. Set environment variables before building:
-
-   ```bash
-   export APPLE_ID="your-apple-id@email.com"
-   export APPLE_APP_SPECIFIC_PASSWORD="xxxx-xxxx-xxxx-xxxx"
-   export APPLE_TEAM_ID="YOUR_TEAM_ID"
-   ```
-
-3. Build: `yarn build && yarn electron:pack`
-
-The entitlements file is already included in `build/entitlements.mac.plist`.
-
-## ⚠️ Important Notes
+## Important Notes
 
 ### Security
 
@@ -221,42 +156,6 @@ The entitlements file is already included in `build/entitlements.mac.plist`.
 - Ensure AppleScript is enabled
 - Try running commands manually to test connectivity
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Code Style
-
-- Run `yarn format` before committing
-- Follow existing code patterns
-- Add comments for complex logic
-
-## 📝 License
+## License
 
 This project is internal to HelloFresh/GoodChop.
-
-## 👥 Support
-
-For issues or questions:
-
-- Open an issue in the repository
-- Contact the GoodChop development team
-- Refer to the [Kubernetes setup guide](https://github.com/hellofresh/hf-kubernetes/tree/master/eks#setup)
-
-## 🔄 Version History
-
-### v1.0.0 (Current)
-
-- Initial release
-- Multi-week recipe swap support
-- Automatic CSV detection and export
-- GoodChop branding
-- User-friendly guided workflow
-
----
-
-**Made with ❤️ for the GoodChop team**

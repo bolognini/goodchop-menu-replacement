@@ -1,6 +1,6 @@
 {
   "name": "goodchop-menu-replacement",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "GoodChop Menu Replacement - Simplified Recipe Management Tool",
   "main": "dist/main/main.js",
   "author": "GoodChop Team",
