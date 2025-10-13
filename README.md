@@ -37,6 +37,10 @@ Before using this application, you need to complete a **one-time setup** of AWS 
 
 ## 🚀 Getting Started
 
+### Installation for End Users
+
+If you received a `.dmg` file and encounter a "damaged app" warning, **see the [Installation Guide](INSTALL.md)** for instructions on how to safely install the app.
+
 ### Installation for Development
 
 1. **Clone the repository**
@@ -142,6 +146,40 @@ Options for distributing to non-technical users:
 1. **GitHub Releases**: Upload the built `.dmg` file to GitHub releases
 2. **Internal Server**: Host the `.dmg` on a company server
 3. **Direct Share**: Share the `.dmg` via email or Slack
+
+**Important**: Users will need to follow the [Installation Guide](INSTALL.md) to bypass macOS Gatekeeper warnings since the app is not code-signed.
+
+### Code Signing (Optional)
+
+For production distribution without warnings, you'll need an Apple Developer account ($99/year):
+
+1. Update `package.json` mac configuration:
+
+   ```json
+   "mac": {
+     "target": "dmg",
+     "category": "public.app-category.developer-tools",
+     "hardenedRuntime": true,
+     "gatekeeperAssess": false,
+     "entitlements": "build/entitlements.mac.plist",
+     "entitlementsInherit": "build/entitlements.mac.plist",
+     "notarize": {
+       "teamId": "${APPLE_TEAM_ID}"
+     }
+   }
+   ```
+
+2. Set environment variables before building:
+
+   ```bash
+   export APPLE_ID="your-apple-id@email.com"
+   export APPLE_APP_SPECIFIC_PASSWORD="xxxx-xxxx-xxxx-xxxx"
+   export APPLE_TEAM_ID="YOUR_TEAM_ID"
+   ```
+
+3. Build: `yarn build && yarn electron:pack`
+
+The entitlements file is already included in `build/entitlements.mac.plist`.
 
 ## ⚠️ Important Notes
 
