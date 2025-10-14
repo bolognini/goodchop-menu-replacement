@@ -10,67 +10,51 @@
 
 GoodChop Menu Replacement is an Electron-based desktop application that streamlines the process of swapping recipe indexes in Kubernetes pods. It provides a user-friendly GUI for operations that typically require technical knowledge to run terminal commands, making it accessible to non-technical team members.
 
-The objective is empowering non-tech teammates on the operational team to make meal replacements themselves, avoiding the bottleneck and Engineering dependency.
-
-## How It Works
-
 The app walks you through connecting to the right Kubernetes pod, then lets you specify which recipes to swap and for which weeks. It runs the necessary commands in the background, waits for the CSVs to be generated, and gives you a button to copy them all to your desktop when they're ready.
 
-## Prerequisites
-
-Before using this application, you need to complete a **one-time setup** of AWS and Kubectl.
-
-You'll need the following tools to authenticate and work with EKS:
-
-- [kubelogin](https://azure.github.io/kubelogin/index.html)
-
-  ```
-  brew install Azure/kubelogin/kubelogin
-  ```
-
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+This app is built to be used only within HelloFresh company as it depends on internal accesses to run it properly. The objective is empowering non-technical teammates on the operational team to make meal replacements themselves, avoiding the bottleneck and Engineering dependency.
 
 ### Setup
 
-1. Download [eksconfig.sh](https://github.com/hellofresh/hf-kubernetes/raw/master/eks/eksconfig.sh) and [eksconfig.yml](https://github.com/hellofresh/hf-kubernetes/raw/master/eks/eksconfig.yml) by clicking File > Save Page As > `eksconfig.sh|eksconfig.yml`
+Before using this application, you need to complete a **one-time setup** of AWS and Kubectl. This also requires asking access to specific Azure groups.
 
-2. Make the script executable
+Please follow **the [Installation Guide](INSTALL.md)** for instructions on how to setup the pre-requisites before running the application.
 
-```
-chmod +x eksconfig.sh
-```
+## Getting Started
 
-3. Run `eksconfig.sh` to setup your EKS Kube config by executing the following commands:
+### App Installation
 
-```
-./eksconfig.sh
-```
+After finishing the one-time setup on your machine, you are ready to run the Good Chop Menu Replacement application.
 
-4. Set KUBECONFIG environment variable
+1. Download the latest `.dmg` on the [releases page](https://github.com/bolognini/goodchop-menu-replacement/releases)
+2. Double-click the `.dmg` file and, on the modal that shows up, drag and drop the Good Chop Menu Replacement to the Applications folder to install it
+3. Open **Terminal** by going to Applications → Utilities → Terminal or Command + Space and searching for Terminal
+4. Run this command:
+   ```bash
+   xattr -cr "/Applications/GoodChop Menu Replacement.app"
+   ```
+5. Open the Good Chop Menu Replacement application by hitting Command + Space and searching for Good Chop
 
-```
-export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/eksconfig
-```
+#### Note
 
-This sets your Kube config to use `config` and the newly generated `eksconfig`. Also, be sure to set this in your `.bashrc` or `.zshrc`.
+If you open the app before running the command above, macOS may show a warning: `"GoodChop Menu Replacement.app" is damaged and can't be opened.`
+The app is **NOT** actually damaged. It's because the app isn't code-signed with an Apple Developer certificate, which costs $99/year at the time this doc was written, and this is not available at the moment. The command will add the application to the allowlist in order to run it.
 
-## System Requirements
+### User Guide
 
-- macOS (primary support)
+More on how the application works and troubleshooting can be found in the [Usage Guide](USAGE_GUIDE.md)
+
+<hr />
+
+### Development
+
+System Requirements
+
+- macOS
 - Node.js 16+ and Yarn
 - AWS CLI configured
 - Kubectl installed and configured
 - Access to HelloFresh Kubernetes clusters
-
-## Getting Started
-
-### Installation for End Users
-
-If you received a `.dmg` file and encounter a "damaged app" warning, **see the [Installation Guide](INSTALL.md)** for instructions on how to safely install the app.
-
-Remember that you still need to do the **one-time setup** [mentioned above](#prerequisites). This requires running simple commands in the terminal. If you're not used to it, please reach out to an Engineer to help you out setting this up.
-
-### Installation for Development
 
 **Clone the repository, install dependencies and run in development mode**
 
@@ -93,68 +77,6 @@ yarn electron:pack
 ```
 
 The built application will be available in the `release/` directory.
-
-## Usage Guide
-
-### Step 1: Authentication & Setup
-
-1. Click **"OIDC Authentication"** to authenticate with AWS
-2. Click **"Set Context"** to configure the Kubernetes namespace
-3. Click **"Connect to Box-Content-Service Pod"** to establish pod connection
-
-### Step 2: Configure Recipe Swap
-
-1. **Courses**: Enter course IDs (e.g., `10,9`)
-2. **Week**: Choose single week or enable multi-week selection
-   - Single: `2023-W13`
-   - Multi-week: From `2023-W13` to `2023-W15`
-3. **Indexes Replacement**: Define replacements (e.g., `10=108,9=103`)
-
-### Step 3: Execute & Export
-
-1. Click **"Swap Recipes Indexes"** to run the swap commands
-2. Wait for CSV generation (the app will retry automatically)
-3. Once all CSVs are ready, click **"Copy CSV to Desktop"**
-
-## Important Notes
-
-### Security
-
-- This application executes shell commands on your system
-- All commands are validated against an allowlist
-- Only use on trusted machines with proper access controls
-
-### Terminal Windows
-
-- The app opens system Terminal windows for kubectl commands
-- **Do not close these terminals** until operations complete
-- Multiple terminal windows may open for multi-week operations
-
-### CSV Detection
-
-- The app monitors terminal output to detect CSV filenames
-- Uses pattern matching: `selection_replace_[A-Z]+_\d{4}-W\d{2}_[A-Z0-9\-%_]+\.csv`
-- Retries up to 20 times with 15-second intervals per week
-
-## 🐛 Troubleshooting
-
-### "CSV filename not found"
-
-- Ensure the vault command completed successfully
-- Check terminal output manually for the CSV filename
-- Verify you're connected to the correct pod
-
-### "Pod verification failed"
-
-- Confirm you completed all authentication steps
-- Check that you're in the `/home/hellofresh` directory in the pod
-- Restart the authentication flow
-
-### Terminal not opening
-
-- Check macOS terminal permissions
-- Ensure AppleScript is enabled
-- Try running commands manually to test connectivity
 
 ## License
 
