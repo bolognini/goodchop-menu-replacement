@@ -86,7 +86,7 @@ You now need to request access to the Kubernetes cluster by raising a ticket wit
 
 In your ticket, request the following:
 
-- **Group**: `acl_aws_sso_eks_live_basic`
+- **Groups**: `css_iam_eks_platform-live-eks_menu_basic` and `css_iam_eks_platform-staging-eks_menu_basic`
 - **Cluster**: EKS Live
 - **Namespaces**: `menu` and `new-ventures`
 - **Permission level**: Admin
@@ -94,7 +94,10 @@ In your ticket, request the following:
 Add your line manager as the approver, and in the description explain why you need access. Here's an example:
 
 ```
-Hi team, I need access to the following group: acl_aws_sso_eks_live_basic
+Hi team, I need access to the following groups:
+
+- `css_iam_eks_platform-live-eks_menu_basic` for live cluster (to access live cluster with k8s context upn-eks-live)
+- `css_iam_eks_platform-staging-eks_menu_basic` for staging cluster (to access staging cluster with k8s context upn-eks-staging)
 
 I need this access to run kubectl commands on the upn-eks-live pod in order to perform
 meal replacements for the GoodChop operational team using the Box-Content-Service.
