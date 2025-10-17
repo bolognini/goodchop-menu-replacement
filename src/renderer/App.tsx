@@ -243,7 +243,7 @@ const App: React.FC = () => {
             type: 'info',
           })
 
-          const vaultCommand = `/vault/vault-env box-content-service selection --country MR --courses ${courses} --sku-pattern MR-% --week ${currentWeek} --replace "${replacements}" --dry-run --limit 10`
+          const vaultCommand = `/vault/vault-env box-content-service selection --country MR --courses ${courses} --sku-pattern MR-% --week ${currentWeek} --replace "${replacements}"`
           console.log('Generated vault command:', vaultCommand)
           await window.electronAPI.executeCommand(vaultCommand)
 
