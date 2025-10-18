@@ -2,18 +2,51 @@ import styled from 'styled-components'
 
 export const AppContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: ${(props) => props.theme.background.darkGradient};
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px;
+  padding: ${(props) => props.theme.spacing.lg};
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-y: auto;
+  position: relative;
 
   @media (max-width: 768px) {
-    padding: 15px;
+    padding: ${(props) => props.theme.spacing.md};
+  }
+`
+
+export const SettingsLink = styled.button`
+  position: fixed;
+  top: ${(props) => props.theme.spacing.lg};
+  right: ${(props) => props.theme.spacing.lg};
+  background: transparent;
+  border: none;
+  color: ${(props) => props.theme.brand.yellow};
+  cursor: pointer;
+  font-size: ${(props) => props.theme.fontSize.base};
+  font-weight: ${(props) => props.theme.fontWeight.medium};
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-decoration: underline;
+  transition: ${(props) => props.theme.transition.base};
+  z-index: 100;
+  padding: ${(props) => props.theme.spacing.sm};
+
+  &:hover {
+    color: ${(props) => props.theme.secondary[400]};
+    text-decoration: none;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    top: ${(props) => props.theme.spacing.md};
+    right: ${(props) => props.theme.spacing.md};
   }
 `
 
@@ -33,62 +66,27 @@ export const Logo = styled.img`
 `
 
 export const Title = styled.h1`
-  color: #f4d03f;
-  font-size: 2.5rem;
-  font-weight: 300;
-  margin-bottom: 1rem;
+  color: ${(props) => props.theme.brand.yellow};
+  font-size: ${(props) => props.theme.fontSize['4xl']};
+  font-weight: ${(props) => props.theme.fontWeight.light};
+  margin-bottom: ${(props) => props.theme.spacing.md};
   letter-spacing: 2px;
   text-align: center;
 `
 
 export const Subtitle = styled.p`
-  color: #ffffff;
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
+  color: ${(props) => props.theme.text.primary};
+  font-size: ${(props) => props.theme.fontSize.lg};
+  margin-bottom: ${(props) => props.theme.spacing.sm};
   text-align: center;
   opacity: 0.8;
 `
 
 export const SmallText = styled.span`
-  color: #ffffff;
-  font-size: 0.9rem;
+  color: ${(props) => props.theme.text.primary};
+  font-size: ${(props) => props.theme.fontSize.base};
   text-align: center;
   opacity: 0.8;
-`
-
-export const SetupNotice = styled.div`
-  background: rgba(255, 193, 7, 0.15);
-  border: 2px solid #ffc107;
-  border-radius: 8px;
-  padding: 15px 20px;
-  margin: 20px 0 30px 0;
-  max-width: 800px;
-  width: 100%;
-
-  p {
-    margin: 0;
-    color: #ffc107;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    text-align: center;
-
-    strong {
-      color: #ffd54f;
-      font-weight: 600;
-    }
-
-    a {
-      color: #64b5f6;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: #90caf9;
-        text-decoration: underline;
-      }
-    }
-  }
 `
 
 export const FormContainer = styled.div`
@@ -169,33 +167,35 @@ export const ExecuteButton = styled.button`
 export const StatusMessage = styled.div<{
   $type: 'success' | 'error' | 'info'
 }>`
-  margin-top: 1rem;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  margin-top: ${(props) => props.theme.spacing.md};
+  padding: ${(props) => props.theme.spacing.sm}
+    ${(props) => props.theme.spacing.lg};
+  border-radius: ${(props) => props.theme.radius.md};
+  font-size: ${(props) => props.theme.fontSize.base};
   text-align: center;
   max-width: 100%;
   word-wrap: break-word;
+  transition: ${(props) => props.theme.transition.base};
 
   ${(props) => {
     switch (props.$type) {
       case 'success':
         return `
-          background: rgba(46, 204, 113, 0.2);
-          color: #2ecc71;
-          border: 1px solid #2ecc71;
+          background: rgba(0, 149, 70, 0.15);
+          color: ${props.theme.success[500]};
+          border: 1px solid ${props.theme.success[500]};
         `
       case 'error':
         return `
-          background: rgba(231, 76, 60, 0.2);
-          color: #e74c3c;
-          border: 1px solid #e74c3c;
+          background: rgba(220, 30, 30, 0.15);
+          color: ${props.theme.error[500]};
+          border: 1px solid ${props.theme.error[500]};
         `
       case 'info':
         return `
-          background: rgba(52, 152, 219, 0.2);
-          color: #3498db;
-          border: 1px solid #3498db;
+          background: rgba(0, 144, 227, 0.15);
+          color: ${props.theme.information[500]};
+          border: 1px solid ${props.theme.information[500]};
         `
     }
   }}
@@ -352,16 +352,21 @@ export const FlowArrow = styled.div`
   }
 `
 
-export const SpecialCommandButton = styled.button`
-  background: rgba(52, 152, 219, 0.2);
-  color: #3498db;
-  border: 1px solid #3498db;
-  padding: 12px 16px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-radius: 6px;
+export const SpecialCommandButton = styled.button<{ $completed?: boolean }>`
+  background: ${(props) =>
+    props.$completed ? 'rgba(0, 149, 70, 0.15)' : `rgba(29, 102, 107, 0.2)`};
+  color: ${(props) =>
+    props.$completed ? props.theme.success[500] : props.theme.brand.teal};
+  border: 1px solid
+    ${(props) =>
+      props.$completed ? props.theme.success[500] : props.theme.brand.teal};
+  padding: ${(props) => props.theme.spacing.sm}
+    ${(props) => props.theme.spacing.md};
+  font-size: ${(props) => props.theme.fontSize.sm};
+  font-weight: ${(props) => props.theme.fontWeight.medium};
+  border-radius: ${(props) => props.theme.radius.md};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${(props) => props.theme.transition.base};
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   text-align: center;
@@ -371,9 +376,13 @@ export const SpecialCommandButton = styled.button`
   justify-content: center;
 
   &:hover {
-    background: rgba(52, 152, 219, 0.3);
+    background: ${(props) =>
+      props.$completed ? 'rgba(0, 149, 70, 0.25)' : 'rgba(29, 102, 107, 0.3)'};
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+    box-shadow: ${(props) =>
+      props.$completed
+        ? props.theme.shadow.md
+        : `0 3px 10px rgba(29, 102, 107, 0.3)`};
   }
 
   &:active {
@@ -382,8 +391,8 @@ export const SpecialCommandButton = styled.button`
 
   &:disabled {
     background: rgba(102, 102, 102, 0.2);
-    color: #666;
-    border-color: #666;
+    color: ${(props) => props.theme.neutral[500]};
+    border-color: ${(props) => props.theme.neutral[500]};
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -403,29 +412,30 @@ export const RecipeSwapContainer = styled.div<{ $enabled: boolean }>`
 `
 
 export const RecipeSwapTitle = styled.h3`
-  color: #2ecc71;
-  margin: 0 0 15px 0;
-  font-size: 1rem;
+  color: ${(props) => props.theme.brand.green};
+  margin: 0 0 ${(props) => props.theme.spacing.md} 0;
+  font-size: ${(props) => props.theme.fontSize.base};
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${(props) => props.theme.spacing.sm};
 
   &::before {
     content: '🔄';
-    font-size: 1.2rem;
+    font-size: ${(props) => props.theme.fontSize.lg};
   }
 `
 
 export const RecipeSwapButton = styled.button`
-  background: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
-  border: 1px solid #2ecc71;
-  padding: 15px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 6px;
+  background: rgba(0, 149, 70, 0.15);
+  color: ${(props) => props.theme.brand.green};
+  border: 1px solid ${(props) => props.theme.brand.green};
+  padding: ${(props) => props.theme.spacing.md}
+    ${(props) => props.theme.spacing.lg};
+  font-size: ${(props) => props.theme.fontSize.base};
+  font-weight: ${(props) => props.theme.fontWeight.semibold};
+  border-radius: ${(props) => props.theme.radius.md};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${(props) => props.theme.transition.base};
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   text-align: center;
@@ -435,9 +445,9 @@ export const RecipeSwapButton = styled.button`
   justify-content: center;
 
   &:hover:not(:disabled) {
-    background: rgba(46, 204, 113, 0.3);
+    background: rgba(0, 149, 70, 0.25);
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+    box-shadow: ${(props) => props.theme.shadow.md};
   }
 
   &:active:not(:disabled) {
@@ -584,5 +594,120 @@ export const RecipeInput = styled.input`
   &::placeholder {
     color: #888;
     font-style: italic;
+  }
+`
+
+// Modal Components
+export const ModalOverlay = styled.div<{ $isOpen: boolean }>`
+  display: ${(props) => (props.$isOpen ? 'flex' : 'none')};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`
+
+export const ModalContent = styled.div`
+  background: ${(props) => props.theme.background.secondary};
+  border: 2px solid ${(props) => props.theme.brand.yellow};
+  border-radius: ${(props) => props.theme.radius.xl};
+  padding: ${(props) => props.theme.spacing.xxl};
+  max-width: 600px;
+  width: 90%;
+  box-shadow: ${(props) => props.theme.shadow.xl};
+  animation: slideIn 0.3s ease-in-out;
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: ${(props) => props.theme.spacing.xl};
+    max-width: 95%;
+  }
+`
+
+export const ModalTitle = styled.h2`
+  color: ${(props) => props.theme.brand.yellow};
+  font-size: ${(props) => props.theme.fontSize['2xl']};
+  font-weight: ${(props) => props.theme.fontWeight.semibold};
+  margin-bottom: ${(props) => props.theme.spacing.lg};
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${(props) => props.theme.spacing.sm};
+`
+
+export const ModalText = styled.p`
+  color: ${(props) => props.theme.text.primary};
+  font-size: ${(props) => props.theme.fontSize.base};
+  line-height: 1.6;
+  margin-bottom: ${(props) => props.theme.spacing.lg};
+
+  strong {
+    color: ${(props) => props.theme.brand.yellow};
+    font-weight: ${(props) => props.theme.fontWeight.semibold};
+  }
+
+  a {
+    color: ${(props) => props.theme.brand.teal};
+    text-decoration: none;
+    font-weight: ${(props) => props.theme.fontWeight.medium};
+    transition: ${(props) => props.theme.transition.base};
+
+    &:hover {
+      color: ${(props) => props.theme.primary[400]};
+      text-decoration: underline;
+    }
+  }
+`
+
+export const ModalButton = styled.button`
+  background: ${(props) => props.theme.brand.yellow};
+  color: ${(props) => props.theme.neutral[800]};
+  border: none;
+  padding: ${(props) => props.theme.spacing.sm}
+    ${(props) => props.theme.spacing.xl};
+  font-size: ${(props) => props.theme.fontSize.base};
+  font-weight: ${(props) => props.theme.fontWeight.semibold};
+  border-radius: ${(props) => props.theme.radius.md};
+  cursor: pointer;
+  transition: ${(props) => props.theme.transition.base};
+  width: 100%;
+  margin-top: ${(props) => props.theme.spacing.md};
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  &:hover {
+    background: ${(props) => props.theme.secondary[400]};
+    transform: translateY(-2px);
+    box-shadow: ${(props) => props.theme.shadow.lg};
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `

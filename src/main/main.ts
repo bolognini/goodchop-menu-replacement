@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import * as path from 'path'
 import { spawn, exec } from 'child_process'
 
@@ -82,8 +82,8 @@ exec bash
           }
         })
       } else {
+        // Run command in background without stealing focus
         const script = `tell application "Terminal"
-          activate
           do script "bash '${tempScript}'; rm -f '${tempScript}'" in front window
         end tell`
 
@@ -117,8 +117,8 @@ exec bash
           }
         })
       } else {
+        // Run command in background without stealing focus
         const script = `tell application "Terminal"
-          activate
           do script "${escapedCommand}" in front window
         end tell`
 
@@ -358,9 +358,8 @@ ipcMain.handle('verify-pod-location', async () => {
           return
         }
 
-        // Run pwd command in the active terminal
+        // Run pwd command in the active terminal without stealing focus
         const runPwdScript = `tell application "Terminal"
-          activate
           do script "pwd" in front window
         end tell`
 
@@ -524,6 +523,7 @@ osascript -e 'tell application "Terminal" to close (every window whose name cont
       fs.writeFileSync(tempScript, scriptContent, { mode: 0o755 })
 
       // Open a NEW terminal window (not a tab) with the script
+      // Note: For kubectl cp we do activate since it's a final step and user might want to see it
       const script = `tell application "Terminal"
         activate
         do script "bash '${tempScript}'; rm -f '${tempScript}'"
@@ -545,4 +545,15 @@ osascript -e 'tell application "Terminal" to close (every window whose name cont
       reject(new Error('New terminal window only supported on macOS'))
     }
   })
+})
+
+// Handle opening external links in system browser
+ipcMain.handle('open-external', async (event, url: string) => {
+  try {
+    await shell.openExternal(url)
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to open external URL:', error)
+    return { success: false, error: String(error) }
+  }
 })

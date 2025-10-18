@@ -10,4 +10,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   captureCsvFilename: () => ipcRenderer.invoke('capture-csv-filename'),
   openNewTerminal: (command: string) =>
     ipcRenderer.invoke('open-new-terminal', command),
+  openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
 })

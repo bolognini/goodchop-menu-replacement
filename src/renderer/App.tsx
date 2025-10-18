@@ -7,7 +7,6 @@ import {
   Title,
   Subtitle,
   SmallText,
-  SetupNotice,
   StatusMessage,
   SupportedCommands,
   SupportedCommandsTitle,
@@ -30,7 +29,14 @@ import {
   InputGroupLabel,
   RecipeInput,
   CsvInfoText,
+  ModalOverlay,
+  ModalContent,
+  ModalTitle,
+  ModalText,
+  ModalButton,
+  SettingsLink,
 } from './styles'
+import Settings from './Settings'
 import logo from './assets/goodchop-logo.png'
 
 declare global {
@@ -49,6 +55,7 @@ declare global {
         success: boolean
       }>
       openNewTerminal: (command: string) => Promise<string>
+      openExternal: (url: string) => Promise<{ success: boolean }>
     }
   }
 }
@@ -61,6 +68,20 @@ const App: React.FC = () => {
     message: string
     type: 'success' | 'error' | 'info'
   } | null>(null)
+
+  // Track which setup commands have been completed
+  const [oidcCompleted, setOidcCompleted] = useState(false)
+  const [contextCompleted, setContextCompleted] = useState(false)
+  const [podConnectionCompleted, setPodConnectionCompleted] = useState(false)
+
+  // Onboarding modal state - check localStorage
+  const [showOnboardingModal, setShowOnboardingModal] = useState(() => {
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding')
+    return hasSeenOnboarding !== 'true'
+  })
+
+  // Settings page state
+  const [showSettings, setShowSettings] = useState(false)
 
   // Recipe swap command variables
   const [courses, setCourses] = useState('10,9')
@@ -190,6 +211,16 @@ const App: React.FC = () => {
     return weeks
   }
 
+  const handleCloseOnboarding = () => {
+    localStorage.setItem('hasSeenOnboarding', 'true')
+    setShowOnboardingModal(false)
+  }
+
+  const handleShowOnboarding = () => {
+    setShowOnboardingModal(true)
+    setShowSettings(false)
+  }
+
   const handlePredefinedCommand = async (predefinedCommand: string) => {
     // Show status message for kubectl exec command
     const isKubectlExec =
@@ -204,6 +235,15 @@ const App: React.FC = () => {
     }
 
     await executeCommand(predefinedCommand)
+
+    // Mark the command as completed based on which command was run
+    if (predefinedCommand.includes('kubectl config use-context upn-eks-live')) {
+      setOidcCompleted(true)
+    } else if (predefinedCommand.includes('kubectl config set-context')) {
+      setContextCompleted(true)
+    } else if (isKubectlExec) {
+      setPodConnectionCompleted(true)
+    }
   }
 
   const handleRecipeSwap = async () => {
@@ -249,8 +289,8 @@ const App: React.FC = () => {
 
           // Wait and retry to capture CSV for this week
           let csvCaptured = false
-          const maxAttempts = 20
-          const retryInterval = 15000 // 30 seconds
+          const maxAttempts = 60 // 30 minutes with 30-second intervals
+          const retryInterval = 30000 // 30 seconds
 
           for (
             let attempt = 1;
@@ -370,8 +410,58 @@ const App: React.FC = () => {
     }
   }
 
+  // Show settings page if requested
+  if (showSettings) {
+    return (
+      <Settings
+        onBack={() => setShowSettings(false)}
+        onShowOnboarding={handleShowOnboarding}
+      />
+    )
+  }
+
   return (
     <AppContainer>
+      {/* Settings Link */}
+      <SettingsLink onClick={() => setShowSettings(true)}>
+        Settings
+      </SettingsLink>
+
+      {/* Onboarding Modal */}
+      <ModalOverlay $isOpen={showOnboardingModal}>
+        <ModalContent>
+          <ModalTitle>Welcome to Good Chop Menu Replacement</ModalTitle>
+          <ModalText>
+            <strong>If this is your first time using the app</strong>, you need
+            to first setup AWS and Kubectl. This is a{' '}
+            <strong>one-time only</strong> setup.
+          </ModalText>
+          <ModalText>
+            Please follow the instructions in our{' '}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                window.electronAPI.openExternal(
+                  'https://github.com/bolognini/goodchop-menu-replacement/blob/main/INSTALL.md'
+                )
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              Setup Guide
+            </a>{' '}
+            before proceeding.
+          </ModalText>
+          <ModalText style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+            By closing this modal, you confirm that you have read and understood
+            the setup requirements. This message will not be shown again.
+          </ModalText>
+          <ModalButton onClick={handleCloseOnboarding}>
+            I understand, don't show this again
+          </ModalButton>
+        </ModalContent>
+      </ModalOverlay>
+
       <LogoContainer>
         <Logo src={logo} alt="GoodChop Logo" />
         <Title>Good Chop Menu Replacement</Title>
@@ -382,27 +472,29 @@ const App: React.FC = () => {
         Chop team.
       </SmallText>
 
-      <SetupNotice>
-        <p>
-          <strong>⚠️ Before anything</strong>, you need to first setup AWS and
-          Kubectl. This is a <strong>one-time only</strong> setup. Please follow
-          the instructions on this link:{' '}
-          <a
-            href="https://github.com/hellofresh/hf-kubernetes/tree/master/eks#setup"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Setup Guide
-          </a>
-        </p>
-      </SetupNotice>
-
       {status && (
-        <StatusMessage $type={status.type}>{status.message}</StatusMessage>
+        <>
+          <StatusMessage $type={status.type}>{status.message}</StatusMessage>
+          {status.message.includes('Waiting for CSV') && (
+            <SmallText
+              style={{
+                marginTop: '8px',
+                textAlign: 'center',
+                color: '#95a5a6',
+              }}
+            >
+              The app will wait up to 30 minutes for each CSV generation. If it
+              takes longer, it will timeout and the CSV should be generated
+              manually.
+            </SmallText>
+          )}
+        </>
       )}
 
       <SpecialCommandsContainer>
-        <SpecialCommandsTitle>Menu Replacement Commands</SpecialCommandsTitle>
+        <SpecialCommandsTitle>
+          Authentication and Pod Connection
+        </SpecialCommandsTitle>
         <SpecialDescription>
           Execute these commands in order from top to bottom to set up your
           environment
@@ -420,6 +512,7 @@ const App: React.FC = () => {
                 )
               }
               disabled={isExecuting}
+              $completed={oidcCompleted}
             >
               OIDC Authentication
             </SpecialCommandButton>
@@ -434,6 +527,7 @@ const App: React.FC = () => {
                 )
               }
               disabled={isExecuting}
+              $completed={contextCompleted}
             >
               Set Context
             </SpecialCommandButton>
@@ -448,6 +542,7 @@ const App: React.FC = () => {
                 )
               }
               disabled={isExecuting}
+              $completed={podConnectionCompleted}
             >
               Connect to Box-Content-Service Pod
             </SpecialCommandButton>
