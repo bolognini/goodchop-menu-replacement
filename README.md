@@ -14,13 +14,13 @@ The app walks you through connecting to the right Kubernetes pod, then lets you 
 
 This app is built to be used only within HelloFresh company as it depends on internal accesses to run it properly. The objective is empowering non-technical teammates on the operational team to make meal replacements themselves, avoiding the bottleneck and Engineering dependency.
 
+## Getting Started
+
 ### Setup
 
 Before using this application, you need to complete a **one-time setup** of AWS and Kubectl. This also requires asking access to specific Azure groups.
 
-Please follow **the [Installation Guide](INSTALL.md)** for instructions on how to setup the pre-requisites before running the application.
-
-## Getting Started
+Please follow the [Installation Guide](INSTALL.md) for instructions on how to setup the pre-requisites before running the application.
 
 ### App Installation
 
